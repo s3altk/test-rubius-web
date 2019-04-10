@@ -1,0 +1,60 @@
+﻿@model TestRubius.Models.Record
+
+<div class="row">
+    <div class="card">
+        <div class="card-content">
+            <ul class="collection" style="border: none; margin: 0px">
+                <li class="collection-item avatar" style="border: none">
+                    <i class="material-icons circle white" style="color: black">work</i>
+                    <span class="title"><b>Проект:</b></span>
+                    <p>
+                        @Model.Project.Name
+                    </p>
+                </li>
+                <li class="collection-item avatar" style="border: none">
+                    <i class="material-icons circle white" style="color: black">edit</i>
+                    <span class="title"><b>Комментарий:</b></span>
+                    <p>
+                        @Model.Comment
+                    </p>
+                </li>
+                <li class="collection-item avatar" style="border: none">
+                    <i class="material-icons circle white" style="color: black">watch_later</i>
+                    <span class="title"><b>Дата и время:</b></span>
+                    <p>
+                        @Model.DateTime.ToShortDateString() @Model.DateTime.ToLongTimeString()
+                    </p>
+                </li>
+            </ul>
+        </div>
+        <div class="card-action">
+            <a class="waves-effect waves-light btn red" onclick="del('@Model.Id');">
+                <i class="material-icons left">delete</i>Удалить
+            </a>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    function del(id) {
+
+        $('#records').html("<div class='progress'><div class='indeterminate'></div></div>");
+
+        $.ajax({
+            url: "/Home/Delete/" + id,
+            type: "GET",
+            success: function (count) {
+
+                if (count == 0) {
+                    $('#header').load("/Home/SetHeader");
+                    $('#records').html("");
+                }
+                else {
+                    $('#records').load("/Home/GetFilterRange");
+                }
+            }
+        });
+    }
+
+</script>

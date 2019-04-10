@@ -1,0 +1,21 @@
+﻿@model int
+
+@if (Model != 0)
+{
+    <h3 id="title">Все записи</h3>
+    <p>Ниже представлены все доступные записи.</p>
+    <a id="filter" class="waves-effect waves-light btn-flat" onclick="filter();">
+        <i class="material-icons left">filter_list</i>Фильтрация
+    </a>
+    <a id="add" class="waves-effect waves-light btn-flat" onclick="add();">
+        <i class="material-icons left">event_note</i>Новая запись
+    </a>
+}
+else
+{
+    <h3 id="title">Нет записей</h3>
+    <p>Для добавления новой записи воспользуйтесь кнопкой ниже.</p>
+    <a id="add" class="waves-effect waves-light btn-flat" onclick="add();">
+        <i class="material-icons left">event_note</i>Новая запись
+    </a>
+}

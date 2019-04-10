@@ -1,0 +1,108 @@
+﻿@model IEnumerable<TestRubius.Models.Project>
+
+<div class="row">
+    <div class="card">
+        <div class="card-content">
+            <span class="card-title">Новая запись</span>
+            <div id="error" style="display: none" class="input-field">
+                <p style="color: red">Все поля должны быть заполнены!</p>
+            </div>
+            <div id="sp" class="input-field">
+                <select id="project">
+                    <option value="" selected>Выберите проект</option>
+                    @foreach (var item in Model)
+                    {
+                        <option value="@item.Id">@item.Name</option>
+                    }
+                </select>
+                <a class="waves-effect waves-light btn" onclick="create();">                    
+                    <i class="material-icons left">work</i>Новый проект
+                </a>
+            </div>
+            <div id="np" class="input-field" style="display: none">
+                <input id="name" type="text">
+                <label for="name">Название проекта</label>
+                <a class="waves-effect waves-light btn" onclick="select();">
+                    <i class="material-icons left">menu</i>Выбрать проект
+                </a>
+            </div>
+            <div class="input-field" style="margin-top: 30px">
+                <textarea id="comment" class="materialize-textarea" data-length="200"></textarea>
+                <label for="comment">Комментарий</label>
+            </div>
+        </div>
+        <div class="card-action">
+            <a class="waves-effect waves-light btn green" onclick="submit();">
+                <i class="material-icons left">add</i>Добавить
+            </a>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $('select').material_select();
+    $('textarea').characterCounter();
+
+    function create() {
+
+        $('#sp').attr("style", "display: none");
+        $('#np').removeAttr("style");
+    }
+
+    function select() {
+
+        $('#np').attr("style", "display: none");
+        $('#sp').removeAttr("style");
+    }
+
+    function submit() {
+
+        var project = "";
+
+        if ($('#sp').attr("style") == "display: none") {
+
+            project = $('#name').val();
+        }
+        else if ($('#np').attr("style") == "display: none") {
+
+            project = $('#project').val();
+        }
+
+        if (project != "" && $('#comment').val() != "") {
+
+            var record = {
+                projectId: $('#project').val(),
+                name: $('#name').val(),
+                comment: $('#comment').val()
+            }
+
+            $('#option').attr("class", "col s12");
+            $('#option').html("");
+
+            $('#add').attr("class", "waves-effect waves-light btn-flat");
+
+            $('#records').html("<div class='progress'><div class='indeterminate'></div></div>");
+
+            $.ajax({
+                url: "/Home/Add",
+                type: "POST",
+                data: record,
+                success: function (count) {
+
+                    $('#records').load("/Home/GetFilterRange");
+
+                    if (count == 1) {
+                        $('#header').load("/Home/SetHeader");
+                    }
+                }
+            });
+        }
+        else {
+
+            $('#error').removeAttr("style");
+            setTimeout(function () { $('#error').attr("style", "display: none") }, 2000);
+        }
+    }
+
+</script>

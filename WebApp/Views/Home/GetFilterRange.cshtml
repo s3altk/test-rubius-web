@@ -1,0 +1,15 @@
+﻿@model TestRubius.Models.RecordRange
+
+@if (Model.Records.Count() != 0)
+{
+    foreach (var item in Model.Records)
+    {
+        @Html.Partial("Record", item)
+    }
+    @Html.Partial("Pagination", Model.RouteParams)
+}
+else
+{
+    <h5>Увы...</h5>
+    <p>Не найдено ни одной записи.</p>
+}

@@ -1,0 +1,75 @@
+﻿@model TestRubius.Models.RouteParams
+
+<ul class="pagination">
+    @if (Model.CurrentPage == 1)
+    {
+        <li class="disabled"><a onclick=""><i class="material-icons">chevron_left</i></a></li>
+    }
+    else
+    {
+        int prevPage = Model.CurrentPage - 1;
+
+        <li class="waves-effect">
+            <a onclick="get('@Model.ProjectId', '@Model.StartDatetime', '@Model.EndDatetime', @Model.RecordNumber, @Model.Order, @prevPage, @Model.PageCount);">
+            <i class="material-icons">chevron_left</i></a>
+        </li>
+    }
+
+    @for (int i = 1; i <= Model.PageCount; i++)
+    {
+        if (i == Model.CurrentPage)
+        {
+            <li class="active">
+                <a onclick="get('@Model.ProjectId', '@Model.StartDatetime', '@Model.EndDatetime', @Model.RecordNumber, @Model.Order, @Model.CurrentPage, @Model.PageCount);">@Model.CurrentPage</a>
+            </li>
+        }
+        else
+        {
+            <li class="waves-effect">
+                <a onclick="get('@Model.ProjectId', '@Model.StartDatetime', '@Model.EndDatetime', @Model.RecordNumber, @Model.Order, @i, @Model.PageCount);">@i</a>
+            </li>
+        }
+    }
+
+    @if (Model.CurrentPage == Model.PageCount)
+    {
+        <li class="disabled"><a onclick=""><i class="material-icons">chevron_right</i></a></li>
+    }
+    else
+    {
+        int nextPage = Model.CurrentPage + 1;
+
+        <li class="waves-effect">
+            <a onclick="get('@Model.ProjectId', '@Model.StartDatetime', '@Model.EndDatetime', @Model.RecordNumber, @Model.Order, @nextPage, @Model.PageCount);">
+            <i class="material-icons">chevron_right</i></a>
+        </li>
+    }
+</ul>
+
+<script type="text/javascript">
+
+    function get(project, sdt, edt, num, order, page, count) {
+
+        $('#records').html("<div class='progress'><div class='indeterminate'></div></div>");
+
+        var param = {
+            ProjectId: project,
+            StartDatetime: sdt,
+            EndDatetime: edt,
+            RecordNumber: num,
+            Order: order,
+            CurrentPage: page,
+            PageCount: count
+        }
+
+        $.ajax({
+            url: "/Home/GetFilterRange",
+            type: "POST",
+            data: param,
+            success: function (data) {
+                $('#records').html(data);
+            }
+        });
+    }
+
+</script>

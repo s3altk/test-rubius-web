@@ -1,0 +1,99 @@
+﻿@model TestRubius.Models.RecordRange
+
+<div id="header" class="row">
+    @Html.Partial("Header", Model.Records.Count())
+</div>
+
+<div class="row">
+    <div id="option" class="col s12" style="padding-right: 40px"></div>
+    <div class="col s12 m6">
+        <div id="records">
+            @if (Model.Records.Count() != 0)
+            {
+                foreach (var item in Model.Records)
+                {
+                    @Html.Partial("Record", item)
+                }
+                @Html.Partial("Pagination", Model.RouteParams)
+            }
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    function filter() {
+
+        if ($('#add').attr("class") == "waves-effect waves-light btn") {
+
+            $('#add').attr("class", "waves-effect waves-light btn-flat");
+        }
+
+        var attr = $('#filter').attr("class");
+
+        if (attr == "waves-effect waves-light btn-flat") {
+
+            $('#option').attr("class", "col s12 m6");
+            $('#option').html("<div class='progress'><div class='indeterminate'></div></div>");
+
+            $('#add').attr("class", "waves-effect waves-light btn-flat disabled");
+            $('#sort').attr("class", "waves-effect waves-light btn-flat disabled");
+
+            $('#option').load("/Home/Filter");
+            $('#filter').attr("class", "waves-effect waves-light btn");
+        }
+        else {
+
+            $('#option').attr("class", "col s12");
+            $('#option').html("");
+
+            $('#title').text("Все записи");
+            $('#add').attr("class", "waves-effect waves-light btn-flat");
+            $('#sort').attr("class", "waves-effect waves-light btn");
+
+            $('#records').html("<div class='progress'><div class='indeterminate'></div></div>");
+            $('#filter').attr("class", "waves-effect waves-light btn-flat");
+
+            var param = {
+                Order: 0,
+                CurrentPage: 1
+            }
+
+            $.ajax({
+                url: "/Home/GetFilterRange",
+                type: "POST",
+                data: param,
+                success: function (data) {
+                    $('#records').html(data);
+                }
+            });
+        }
+    }
+
+    function add() {
+
+        if ($('#filter').attr("class") == "waves-effect waves-light btn") {
+
+            $('#filter').attr("class", "waves-effect waves-light btn-flat");
+        }
+
+        var attr = $('#add').attr("class");
+
+        if (attr == "waves-effect waves-light btn-flat") {
+
+            $('#option').attr("class", "col s12 m6");
+            $('#option').html("<div class='progress'><div class='indeterminate'></div></div>");
+
+            $('#option').load("/Home/Add");
+            $('#add').attr("class", "waves-effect waves-light btn");
+        }
+        else {
+
+            $('#option').attr("class", "col s12");
+
+            $('#option').html("");
+            $('#add').attr("class", "waves-effect waves-light btn-flat");
+        }
+    }
+
+</script>

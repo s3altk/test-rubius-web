@@ -1,0 +1,134 @@
+﻿@model TestRubius.Models.RouteParams
+
+<div class="card">
+    <div class="card-content" style="padding-bottom: 180px">
+        <span class="card-title">Фильтрация</span>
+        <div class="input-field">
+            <select id="project">
+                <option value="" selected>Выберите проект</option>
+                @foreach (var item in ViewBag.Projects)
+                {
+                    <option value="@item.Id">@item.Name</option>
+                }
+            </select>
+        </div>
+        <div class="input-field">
+            <select id="order">
+                <option value="0" selected>По убыванию даты</option>
+                <option value="1">По возрастанию даты</option>
+            </select>
+        </div>
+        <div class="input-field" style="margin-top: 30px">
+            <input id="num" type="number" class="validate" min="1" max="@Model.RecordNumber">
+            <label for="num">Количество записей</label>
+        </div>
+        <div class="input-field col s6">
+            <input id="sdate" type="date" min="@Model.StartDatetime.ToString("yyyy-MM-dd")" max="@Model.EndDatetime.ToString("yyyy-MM-dd")">
+            <label for="sdate" class="active">Начальная дата</label>
+        </div>
+        <div class="input-field col s6">
+            <input id="stime" type="time">
+            <label for="stime" class="active">Начальное время</label>
+        </div>
+        <div class="input-field col s6">
+            <input id="edate" type="date" min="@Model.StartDatetime.ToString("yyyy-MM-dd")" max="@Model.EndDatetime.ToString("yyyy-MM-dd")">
+            <label for="edate" class="active">Конечная дата</label>
+        </div>
+        <div class="input-field col s6">
+            <input id="etime" type="time">
+            <label for="etime" class="active">Конечное время</label>
+        </div>
+    </div>
+    <div class="card-action">
+        <a class="waves-effect waves-light btn green" onclick="apply();">
+            <i class="material-icons left">done</i>Принять
+        </a>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $('select').material_select();
+
+    function apply() {
+
+        var error = 0;
+
+        var projectId = $('#project').val();
+        var recordNumber = $('#num').val();
+        var startDate = $('#sdate').val();
+        var startTime = $('#stime').val();
+        var endDate = $('#edate').val();
+        var endTime = $('#etime').val();
+        var order = $('#order').val();
+
+        var maxDate = $('#sdate').attr("max");
+        var minDate = $('#sdate').attr("min");
+
+        if ($('#num').attr("class") == "validate invalid") {
+
+            error++;
+        }
+
+        if (startDate == "" && startTime != "") {
+
+            $('#sdate').attr("class", "validate invalid");
+            setTimeout(function () { $('#sdate').attr("class", "validate") }, 2000);
+
+            error++;
+        }
+
+        if (startDate == "" && startTime == "") {
+
+            $('#stime').val("--:--");
+        }
+
+        if (endDate == "" && endTime != "") {
+
+            $('#edate').attr("class", "validate invalid");
+            setTimeout(function () { $('#edate').attr("class", "validate") }, 2000);
+
+            error++;
+        }
+
+        if (endDate == "" && endTime == "") {
+
+            $('#etime').val("--:--");
+        }
+
+        if (startDate > endDate) {
+
+            $('#sdate').attr("class", "validate invalid");
+            $('#edate').attr("class", "validate invalid");
+            setTimeout(function () { $('#sdate').attr("class", "validate") }, 2000);
+            setTimeout(function () { $('#edate').attr("class", "validate") }, 2000);
+
+            error++;
+        }
+
+        if (error == 0) {
+
+            $('#title').text("Записи по фильтру");
+            $('#records').html("<div class='progress'><div class='indeterminate'></div></div>");
+
+            var param = {
+                ProjectId: projectId,
+                StartDatetime: startDate + " " + startTime,
+                EndDatetime: endDate + " " + endTime,
+                RecordNumber: recordNumber,
+                Order: order,
+                CurrentPage: 1
+            }
+
+            $.ajax({
+                url: "/Home/GetFilterRange",
+                type: "POST",
+                data: param,
+                success: function (data) {
+                    $('#records').html(data);
+                }
+            });
+        }       
+    }
+
+</script>
